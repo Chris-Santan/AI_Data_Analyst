@@ -2,11 +2,12 @@
 from .database_interface import DatabaseConnectionInterface
 from .query_interface import QueryExecutionInterface
 from .statistical_test_interface import StatisticalTestInterface
-from .ai_interface import AIQueryGeneratorInterface
+from .ai_interface import AIQueryGeneratorInterface, DataConversationInterface
 
 __all__ = [
     'DatabaseConnectionInterface',
     'QueryExecutionInterface',
     'StatisticalTestInterface',
-    'AIQueryGeneratorInterface'
+    'AIQueryGeneratorInterface',
+    'DataConversationInterface'
 ]
