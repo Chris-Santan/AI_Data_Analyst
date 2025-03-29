@@ -55,7 +55,8 @@ class DatabaseConnection(DatabaseConnectionInterface):
             connect_args: Optional[Dict[str, Any]] = None,
             use_pool: bool = True,
             config: Optional[DatabaseConfig] = None,
-            auth_manager: Optional[AuthenticationManager] = None
+            auth_manager: Optional[AuthenticationManager] = None,
+            error_handler: Optional[Any] = None
     ):
         """
         Initialize database connection with flexible configuration options.
@@ -71,6 +72,7 @@ class DatabaseConnection(DatabaseConnectionInterface):
             use_pool (bool): Whether to use connection pooling
             config (Optional[DatabaseConfig]): Database configuration
             auth_manager (Optional[AuthenticationManager]): Authentication manager
+            error_handler (Optional[DatabaseErrorHandler]): Error handler for database operations
         """
         self._connection_string = connection_string
         self._db_type = db_type
@@ -82,6 +84,10 @@ class DatabaseConnection(DatabaseConnectionInterface):
         self._use_pool = use_pool
         self._config = config or DatabaseConfig()
         self._auth_manager = auth_manager or AuthenticationManager()
+
+        # Import error handler here to avoid circular imports
+        from database.error_handler import DatabaseErrorHandler
+        self._error_handler = error_handler or DatabaseErrorHandler()
 
         # Connection state
         self._engine: Optional[Engine] = None
@@ -95,6 +101,7 @@ class DatabaseConnection(DatabaseConnectionInterface):
     def connect(self) -> bool:
         """
         Establish a database connection using the provided configuration.
+        Uses retry logic for transient errors.
 
         Returns:
             bool: True if connection is successful
@@ -102,7 +109,9 @@ class DatabaseConnection(DatabaseConnectionInterface):
         Raises:
             DatabaseConnectionError: If connection fails
         """
-        try:
+
+        # Define the function to execute with retry
+        def _establish_connection():
             # If already connected, return True
             if self._is_connected and self._engine:
                 return True
@@ -173,15 +182,28 @@ class DatabaseConnection(DatabaseConnectionInterface):
             logger.info(f"Successfully connected to database: {self._db_type or self._connection_string}")
 
             return True
-        except SQLAlchemyError as e:
+
+        try:
+            # Execute the connection with retry logic
+            return self._error_handler.execute_with_retry(
+                _establish_connection,
+                operation_name="database connection"
+            )
+        except Exception as e:
             self._is_connected = False
             self._engine = None
             self._session_factory = None
 
-            error_message = f"Failed to connect to database: {str(e)}"
-            logger.error(error_message)
+            # Handle the error and convert to appropriate exception
+            context = {
+                "connection_string": self._connection_string,
+                "db_type": self._db_type,
+                "host": self._host,
+                "database": self._database
+            }
 
-            raise DatabaseConnectionError(error_message) from e
+            exception = self._error_handler.handle_error(e, "database connection", context)
+            raise exception
 
     def disconnect(self) -> None:
         """

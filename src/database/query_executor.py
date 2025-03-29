@@ -1,3 +1,4 @@
+# src/database/query_executor.py
 from typing import Dict, Any, List, Optional, Union
 import re
 import sqlalchemy as sa
@@ -6,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from core.interfaces.query_interface import QueryExecutionInterface
 from core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
 from database.connection import DatabaseConnection
-
+from database.error_handler import DatabaseErrorHandler
 
 class QueryExecutor(QueryExecutionInterface):
     """
@@ -14,14 +15,16 @@ class QueryExecutor(QueryExecutionInterface):
     Provides validation, execution, and result formatting.
     """
 
-    def __init__(self, connection: DatabaseConnection):
+    def __init__(self, connection: DatabaseConnection, error_handler: Optional[DatabaseErrorHandler] = None):
         """
         Initialize with a database connection.
 
         Args:
             connection (DatabaseConnection): An established database connection
+            error_handler (Optional[DatabaseErrorHandler]): Error handler for database operations
         """
         self._connection = connection
+        self._error_handler = error_handler or DatabaseErrorHandler()
 
     def validate_query(self, query: str) -> bool:
         """
@@ -78,7 +81,7 @@ class QueryExecutor(QueryExecutionInterface):
 
     def execute_query(self, query: str) -> List[Dict[str, Any]]:
         """
-        Execute a SQL query.
+        Execute a SQL query with error handling and retries.
 
         Args:
             query (str): SQL query to execute
@@ -98,7 +101,8 @@ class QueryExecutor(QueryExecutionInterface):
         # Sanitize query before execution
         sanitized_query = self.sanitize_query(query)
 
-        try:
+        # Define the function to execute with retry
+        def _execute_query():
             # Get a session from the connection
             session = self._connection.get_session()
 
@@ -124,11 +128,20 @@ class QueryExecutor(QueryExecutionInterface):
                     # For queries that don't return rows (e.g. EXPLAIN)
                     return [{"message": "Query executed successfully. No rows returned."}]
 
-        except (SQLAlchemyError, DatabaseConnectionError) as e:
-            raise QueryExecutionError(
-                query=sanitized_query,
-                error_message=str(e)
-            ) from e
+        try:
+            # Execute the query with retry logic
+            return self._error_handler.execute_with_retry(
+                _execute_query,
+                operation_name=f"execution of query: {sanitized_query[:50]}..."
+            )
+        except (QueryExecutionError, DatabaseConnectionError) as e:
+            # These are already our custom exceptions, so just re-raise
+            raise
+        except Exception as e:
+            # For any other exceptions, handle them and convert to our custom exceptions
+            context = {"query": sanitized_query}
+            exception = self._error_handler.handle_error(e, "query execution", context)
+            raise exception
 
     def execute_select_count(self, table_name: str) -> int:
         """
@@ -177,7 +190,8 @@ class QueryExecutor(QueryExecutionInterface):
                 error_message="Invalid query structure or syntax"
             )
 
-        try:
+        # Define the function to execute with retry
+        def _execute_query_with_params():
             # Get a session from the connection
             session = self._connection.get_session()
 
@@ -203,8 +217,17 @@ class QueryExecutor(QueryExecutionInterface):
                     # For queries that don't return rows
                     return [{"message": "Query executed successfully. No rows returned."}]
 
-        except (SQLAlchemyError, DatabaseConnectionError) as e:
-            raise QueryExecutionError(
-                query=query,
-                error_message=str(e)
-            ) from e
+        try:
+            # Execute the query with retry logic
+            return self._error_handler.execute_with_retry(
+                _execute_query_with_params,
+                operation_name=f"execution of parameterized query: {query[:50]}..."
+            )
+        except (QueryExecutionError, DatabaseConnectionError) as e:
+            # These are already our custom exceptions, so just re-raise
+            raise
+        except Exception as e:
+            # For any other exceptions, handle them and convert to our custom exceptions
+            context = {"query": query, "parameters": parameters}
+            exception = self._error_handler.handle_error(e, "parameterized query execution", context)
+            raise exception
