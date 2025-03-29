@@ -11,7 +11,7 @@ import sys
 # Go up two directory levels (tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 # Import the setup script
-import setup_path
+import setup
 
 import unittest
 import logging
@@ -67,7 +67,7 @@ def discover_and_run_tests():
     logger.info("Discovering and running database tests")
 
     test_loader = unittest.TestLoader()
-    start_dir = os.path.join(os.path.dirname(__file__), 'unit', 'database')
+    start_dir = os.path.join(os.path.dirname(__file__), 'unit', 'data_analytics_platform/database')
 
     # Pattern to match all test files
     pattern = 'test_*.py'

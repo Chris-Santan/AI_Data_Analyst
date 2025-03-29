@@ -5,7 +5,6 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
@@ -13,9 +12,9 @@ from unittest.mock import patch, MagicMock, PropertyMock
 import sqlalchemy as sa
 from sqlalchemy.engine import Engine
 
-from database.schema_retriever import SchemaRetriever
-from database.connection import DatabaseConnection
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.schema_retriever import SchemaRetriever
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 class TestSchemaRetriever(unittest.TestCase):

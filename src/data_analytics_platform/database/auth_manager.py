@@ -1,14 +1,14 @@
 import os
 import base64
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Dict, Any, Optional
 from dotenv import load_dotenv
 import keyring
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 class AuthenticationManager:

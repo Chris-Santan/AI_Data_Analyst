@@ -4,14 +4,13 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
 import logging
 import sqlite3
 
 # Import custom exceptions
-from core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
+from data_analytics_platform.core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
 
 # Set up basic logging
 logging.basicConfig(

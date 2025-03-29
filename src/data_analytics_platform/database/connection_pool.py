@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 import threading
 import time
 import sqlalchemy as sa
@@ -7,8 +7,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 
-from core.exceptions.custom_exceptions import DatabaseConnectionError
-from database.config import DatabaseConfig
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.config import DatabaseConfig
 
 logger = logging.getLogger(__name__)
 

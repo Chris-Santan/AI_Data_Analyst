@@ -5,16 +5,15 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock, call
+from unittest.mock import patch, MagicMock
 import sqlalchemy as sa
 
-from database.connection import DatabaseConnection, get_global_connection_pool
-from database.config import DatabaseConfig
-from database.auth_manager import AuthenticationManager
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.connection import DatabaseConnection, get_global_connection_pool
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.database.auth_manager import AuthenticationManager
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 class TestDatabaseConnection(unittest.TestCase):

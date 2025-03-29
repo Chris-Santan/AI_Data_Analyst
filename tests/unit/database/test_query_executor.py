@@ -3,17 +3,15 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 
-import sqlalchemy as sa
 from sqlalchemy.exc import SQLAlchemyError
 
-from database.query_executor import QueryExecutor
-from database.connection import DatabaseConnection
-from core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
+from data_analytics_platform.database import QueryExecutor
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.core.exceptions.custom_exceptions import QueryExecutionError
 
 
 class TestQueryExecutor(unittest.TestCase):

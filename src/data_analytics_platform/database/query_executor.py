@@ -1,13 +1,12 @@
 # src/database/query_executor.py
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional
 import re
 import sqlalchemy as sa
-from sqlalchemy.exc import SQLAlchemyError
 
-from core.interfaces.query_interface import QueryExecutionInterface
-from core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
-from database.connection import DatabaseConnection
-from database.error_handler import DatabaseErrorHandler
+from data_analytics_platform.core.interfaces.query_interface import QueryExecutionInterface
+from data_analytics_platform.core.exceptions.custom_exceptions import QueryExecutionError, DatabaseConnectionError
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.database.error_handler import DatabaseErrorHandler
 
 class QueryExecutor(QueryExecutionInterface):
     """

@@ -3,16 +3,14 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
 import base64
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from pathlib import Path
-import keyring
 
-from database.auth_manager import AuthenticationManager
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.auth_manager import AuthenticationManager
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 class TestAuthenticationManager(unittest.TestCase):
     """Test cases for the AuthenticationManager class."""

@@ -1,10 +1,10 @@
 import os
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, Optional, Union
 from pathlib import Path
 
-from database.auth_manager import AuthenticationManager
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.auth_manager import AuthenticationManager
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 @dataclass

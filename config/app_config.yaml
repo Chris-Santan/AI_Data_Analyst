@@ -1,0 +1,43 @@
+# config/app_config.yaml
+database:
+  default_type: sqlite
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+  pool_recycle: 1800
+
+ai:
+  provider: openai
+  model: gpt-3.5-turbo
+  temperature: 0.7
+  max_tokens: 1000
+  cache_enabled: true
+  cache_dir: .cache/ai
+
+logging:
+  handlers:
+    console:
+      level: INFO
+    file:
+      level: DEBUG
+  loggers:
+    "":  # root logger
+      level: DEBUG
+    database:
+      level: INFO
+    ai_module:
+      level: DEBUG
+
+analytics:
+  default_test_confidence: 0.95
+  use_bonferroni_correction: true
+  cache_results: true
+
+visualization:
+  default_chart_type: bar
+  theme: default
+  use_interactive: true
+  export_formats:
+    - png
+    - svg
+    - pdf
