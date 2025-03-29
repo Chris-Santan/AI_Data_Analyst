@@ -6,6 +6,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 import unittest
 from unittest.mock import patch, MagicMock
+from datetime import datetime
+import datetime
+from decimal import Decimal
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -261,6 +264,151 @@ class TestQueryExecutor(unittest.TestCase):
 
         # Assert error message
         self.assertIn("Database error", str(context.exception))
+
+    # The following tests can be added to your existing test_query_executor.py file
+
+    def test_execute_query_large_result_set(self):
+        """Test handling of large result sets."""
+        # Mock session
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.returns_rows = True
+        mock_result.keys.return_value = ["id", "name"]
+
+        # Create a large result set (1000 rows)
+        large_data = [(i, f"test{i}") for i in range(1000)]
+        mock_result.__iter__.return_value = large_data
+
+        # Set up the mock session and connection
+        self.mock_connection.get_session.return_value = mock_session
+        mock_session.__enter__.return_value.execute.return_value = mock_result
+
+        # Execute query
+        result = self.query_executor.execute_query("SELECT * FROM large_table")
+
+        # Assert
+        self.assertEqual(len(result), 1000)
+        self.assertEqual(result[0]["id"], 0)
+        self.assertEqual(result[999]["id"], 999)
+
+    def test_execute_query_empty_result(self):
+        """Test handling of empty result sets."""
+        # Mock session
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.returns_rows = True
+        mock_result.keys.return_value = ["id", "name"]
+        mock_result.__iter__.return_value = []  # Empty result set
+
+        # Set up the mock session and connection
+        self.mock_connection.get_session.return_value = mock_session
+        mock_session.__enter__.return_value.execute.return_value = mock_result
+
+        # Execute query
+        result = self.query_executor.execute_query("SELECT * FROM users WHERE 1=0")
+
+        # Assert
+        self.assertEqual(len(result), 0)
+        self.assertEqual(result, [])
+
+    def test_execute_query_with_null_values(self):
+        """Test handling of NULL values in query results."""
+        # Mock session
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.returns_rows = True
+        mock_result.keys.return_value = ["id", "name", "email"]
+        mock_result.__iter__.return_value = [
+            (1, "test", None),  # NULL email
+            (2, None, "test@example.com"),  # NULL name
+            (3, "test3", "test3@example.com")  # No NULLs
+        ]
+
+        # Set up the mock session and connection
+        self.mock_connection.get_session.return_value = mock_session
+        mock_session.__enter__.return_value.execute.return_value = mock_result
+
+        # Execute query
+        result = self.query_executor.execute_query("SELECT * FROM users")
+
+        # Assert
+        self.assertEqual(len(result), 3)
+        self.assertIsNone(result[0]["email"])
+        self.assertIsNone(result[1]["name"])
+        self.assertIsNotNone(result[2]["name"])
+        self.assertIsNotNone(result[2]["email"])
+
+    @patch("data_analytics_platform.database.error_handler.DatabaseErrorHandler.execute_with_retry")
+    def test_retry_mechanism(self, mock_retry):
+        """Test that the retry mechanism is used during query execution."""
+        # Set up mock return value
+        mock_retry.return_value = [{"id": 1, "name": "test"}]
+
+        # Execute query
+        result = self.query_executor.execute_query("SELECT * FROM users")
+
+        # Assert retry was called
+        mock_retry.assert_called_once()
+        self.assertEqual(len(result), 1)
+
+    def test_query_with_special_characters(self):
+        """Test query with special characters and Unicode."""
+        # Mock session
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.returns_rows = True
+        mock_result.keys.return_value = ["id", "name"]
+        mock_result.__iter__.return_value = [(1, "José"), (2, "你好")]
+
+        # Set up the mock session and connection
+        self.mock_connection.get_session.return_value = mock_session
+        mock_session.__enter__.return_value.execute.return_value = mock_result
+
+        # Execute query with Unicode characters
+        query = "SELECT * FROM users WHERE name LIKE '%ö%'"
+        result = self.query_executor.execute_query(query)
+
+        # Assert
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]["name"], "José")
+        self.assertEqual(result[1]["name"], "你好")
+
+        # Verify execute was called with the right query
+        mock_session.__enter__.return_value.execute.assert_called_once()
+        args, _ = mock_session.__enter__.return_value.execute.call_args
+        self.assertEqual(str(args[0]), query)
+
+    def test_execute_query_with_complex_parameters(self):
+        """Test executing a query with complex parameter types."""
+        # Mock session
+        mock_session = MagicMock()
+        mock_result = MagicMock()
+        mock_result.returns_rows = True
+        mock_result.keys.return_value = ["id", "name"]
+        mock_result.__iter__.return_value = [(1, "test"), (2, "test2")]
+
+        # Set up the mock session and connection
+        self.mock_connection.get_session.return_value = mock_session
+        mock_session.__enter__.return_value.execute.return_value = mock_result
+
+        # Execute parameterized query with complex parameters
+        params = {
+            "ids": [1, 2, 3],  # List
+            "start_date": datetime.date(2023, 1, 1),  # Date object
+            "active": True,  # Boolean
+            "amount": Decimal("123.45")  # Decimal
+        }
+
+        result = self.query_executor.execute_query_with_parameters(
+            "SELECT * FROM users WHERE id IN :ids AND created_at > :start_date AND active = :active AND balance > :amount",
+            params
+        )
+
+        # Assert
+        self.assertEqual(len(result), 2)
+
+        # Verify execute was called with the parameters
+        mock_session.__enter__.return_value.execute.assert_called_once()
 
 
 if __name__ == "__main__":
