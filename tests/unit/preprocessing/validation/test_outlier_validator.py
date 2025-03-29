@@ -1,4 +1,3 @@
-# tests/unit/preprocessing/validation/test_outlier_validator.py
 import unittest
 import pandas as pd
 import numpy as np
@@ -17,16 +16,24 @@ class TestOutlierValidator(unittest.TestCase):
         """Set up test data."""
         # Create a sample DataFrame with outliers
         np.random.seed(42)
+
+        # Create normal values
         normal_values = np.random.normal(loc=100, scale=10, size=100)
 
         # Add some outliers
         outlier_values = np.array([150, 160, 40, 30])
-        all_values = np.concatenate([normal_values, outlier_values])
 
+        # Create a sample of normal values to use
+        sample_normal = normal_values[:96]  # Take first 96 values to make room for outliers
+
+        # Combine normal and outlier values to get 100 total values
+        all_values = np.concatenate([sample_normal, outlier_values])
+
+        # Create the DataFrame with equal-length arrays
         self.data = pd.DataFrame({
             'normal_col': normal_values,
             'outlier_col': all_values,
-            'categorical_col': ['A'] * 50 + ['B'] * 50 + ['C'] * 4
+            'categorical_col': ['A'] * 50 + ['B'] * 50
         })
 
     def test_zscore_outlier_detection(self):
@@ -172,5 +179,5 @@ class TestOutlierValidator(unittest.TestCase):
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
