@@ -4,14 +4,13 @@ import sys
 # Go up three directory levels (database -> unit -> tests -> project root)
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 # Import the setup script
-import setup_path
 
 import unittest
 from unittest.mock import patch, MagicMock
 from pathlib import Path
 
-from database.config import DatabaseConfig
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 class TestDatabaseConfig(unittest.TestCase):

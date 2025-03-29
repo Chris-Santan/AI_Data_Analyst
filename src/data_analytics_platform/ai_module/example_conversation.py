@@ -1,8 +1,8 @@
-from database.connection import DatabaseConnection
-from database.config import DatabaseConfig
-from ai_module.conversation_handler import AIConversationHandler
-from ai_module.llm_adapter import LLMAdapter  # You'll need to implement this
-from database.query_executor import QueryExecutor
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.ai_module.conversation_handler import AIConversationHandler
+from data_analytics_platform.ai_module import LLMAdapter  # You'll need to implement this
+from data_analytics_platform.database import QueryExecutor
 
 
 def conversation_example():

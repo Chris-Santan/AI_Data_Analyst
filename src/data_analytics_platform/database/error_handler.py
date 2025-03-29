@@ -1,12 +1,11 @@
 # src/database/error_handler.py
 import logging
 import time
-from typing import Callable, Any, Optional, Dict, List, Tuple
-import sqlalchemy.exc
+from typing import Callable, Any, Optional, Dict
 from sqlalchemy.exc import SQLAlchemyError, OperationalError, IntegrityError, ProgrammingError
 
 # Import using relative imports from src directory
-from core.exceptions.custom_exceptions import (
+from data_analytics_platform.core.exceptions.custom_exceptions import (
     DatabaseConnectionError,
     QueryExecutionError,
     DataAnalyticsPlatformError

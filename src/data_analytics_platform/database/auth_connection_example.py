@@ -1,14 +1,10 @@
 import os
-import time
 from dotenv import load_dotenv
-from typing import Dict, Any, List
 
-from database.config import DatabaseConfig
-from database.auth_manager import AuthenticationManager
-from database.connection import DatabaseConnection, get_global_connection_pool
-from database.schema_retriever import SchemaRetriever
-from database.query_executor import QueryExecutor
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.database.auth_manager import AuthenticationManager
+from data_analytics_platform.database.connection import DatabaseConnection, get_global_connection_pool
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 def example_authentication_methods():

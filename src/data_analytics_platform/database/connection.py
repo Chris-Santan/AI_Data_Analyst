@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 import sqlalchemy as sa
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -7,11 +7,11 @@ from sqlalchemy import inspect
 import logging
 import threading
 
-from core.interfaces.database_interface import DatabaseConnectionInterface
-from core.exceptions.custom_exceptions import DatabaseConnectionError
-from database.config import DatabaseConfig
-from database.auth_manager import AuthenticationManager
-from database.connection_pool import ConnectionPool
+from data_analytics_platform.core.interfaces.database_interface import DatabaseConnectionInterface
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.database.auth_manager import AuthenticationManager
+from data_analytics_platform.database.connection_pool import ConnectionPool
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class DatabaseConnection(DatabaseConnectionInterface):
         self._auth_manager = auth_manager or AuthenticationManager()
 
         # Import error handler here to avoid circular imports
-        from database.error_handler import DatabaseErrorHandler
+        from data_analytics_platform.database.error_handler import DatabaseErrorHandler
         self._error_handler = error_handler or DatabaseErrorHandler()
 
         # Connection state

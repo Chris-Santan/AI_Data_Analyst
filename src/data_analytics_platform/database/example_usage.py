@@ -1,8 +1,8 @@
-from core.exceptions.custom_exceptions import DatabaseConnectionError, QueryExecutionError
-from database.config import DatabaseConfig
-from database.connection import DatabaseConnection
-from database.schema_retriever import SchemaRetriever
-from database.query_executor import QueryExecutor
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError, QueryExecutionError
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.database.schema_retriever import SchemaRetriever
+from data_analytics_platform.database.query_executor import QueryExecutor
 
 
 def example_database_operations():

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from analytics.statistical_tests.test_runner import StatisticalTestRunner, TestType
-from analytics.statistical_tests.test_factory import StatisticalTestFactory
+from data_analytics_platform.analytics.statistical_tests.test_runner import StatisticalTestRunner, TestType
+from data_analytics_platform.analytics.statistical_tests.test_factory import StatisticalTestFactory
 
 
 def statistical_test_example():

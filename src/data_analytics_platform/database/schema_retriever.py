@@ -1,10 +1,9 @@
-from typing import Dict, Any, List, Optional, Tuple
-import sqlalchemy as sa
+from typing import Dict, Any, List
 from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
 
-from core.interfaces.database_interface import DatabaseConnectionInterface
-from core.exceptions.custom_exceptions import DatabaseConnectionError
+from data_analytics_platform.core.interfaces.database_interface import DatabaseConnectionInterface
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError
 
 
 class SchemaRetriever:

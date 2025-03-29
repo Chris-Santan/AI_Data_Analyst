@@ -1,19 +1,18 @@
 # src/database/error_handling_examples.py
 import logging
-from sqlalchemy.exc import OperationalError, ProgrammingError, IntegrityError
-import time
+from sqlalchemy.exc import OperationalError
 import sys
 import os
 
 # Add parent directory to path to help with imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 # Import from project structure
-from src.database.config import DatabaseConfig
-from src.database.connection import DatabaseConnection
-from src.database.query_executor import QueryExecutor
-from src.database.error_handler import DatabaseErrorHandler
-from src.core.exceptions.custom_exceptions import DatabaseConnectionError, QueryExecutionError
+from data_analytics_platform.database.config import DatabaseConfig
+from data_analytics_platform.database.connection import DatabaseConnection
+from data_analytics_platform.database.query_executor import QueryExecutor
+from data_analytics_platform.database.error_handler import DatabaseErrorHandler
+from data_analytics_platform.core.exceptions.custom_exceptions import DatabaseConnectionError, QueryExecutionError
 
 # Set up logging
 logging.basicConfig(
